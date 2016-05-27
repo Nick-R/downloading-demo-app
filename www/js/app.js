@@ -5,8 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
-angular.module('myApp', ['ngCordova'])
+angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', 'ngCordova'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -21,6 +20,35 @@ angular.module('myApp', ['ngCordova'])
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
     }
+
+
+    var url = "http://cdn.wall-pix.net/albums/art-space/00030109.jpg";
+      var targetPath = cordova.file.documentsDirectory + "testImage.png";
+      var trustHosts = true;
+      var options = {};
+
+      var fileTransfer = new FileTransfer();
+      fileTransfer.download(
+          url,
+          targetPath,
+          function(entry) {
+              console.log("download complete: " + entry.toURL());
+          },
+          function(error) {
+              console.log("download error source " + error.source);
+              console.log("download error target " + error.target);
+              console.log("upload error code" + error.code);
+          },
+          false, {
+              headers: {
+                  "Authorization": ""
+              }
+          });
+      fileTransfer.onprogress = function(progressEvent) {
+          if (progressEvent.lengthComputable) {
+            console.log("progress: " + progressEvent.loaded / progressEvent.total *100 + "%");
+          }
+      };
   });
 })
 
