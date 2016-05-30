@@ -21,7 +21,11 @@
     "cordova-plugin-splashscreen",
     "cordova-plugin-statusbar",
     "ionic-plugin-keyboard",
-    "cordova-plugin-file-transfer"
+    "cordova-plugin-file-transfer",
+    {
+      "locator": "https://github.com/christocracy/cordova-plugin-background-fetch.git",
+      "id": "cordova-plugin-background-fetch"
+    }
   ],
   "cordovaPlatforms": []
 }

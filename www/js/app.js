@@ -25,25 +25,17 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
 
 .controller('DownloadCtrl', function($scope) {
 
-  $scope.downloadAction = function() {
-    var url = "http://cdn.wall-pix.net/albums/art-space/00030109.jpg";
-    var targetPath = cordova.file.documentsDirectory + "testImage.png";
+  download = function(url, success, failure, progress) {
+    var targetPath = cordova.file.documentsDirectory + url.substring(url.lastIndexOf('/') + 1);;
     var trustHosts = true;
     var options = {};
 
     $scope.fileTransfer = new FileTransfer();
-    window.progressBar.value = 0;
     $scope.fileTransfer.download(
         url,
         targetPath,
-        function(entry) {
-            console.log("download complete: " + entry.toURL());
-        },
-        function(error) {
-            console.log("download error source " + error.source);
-            console.log("download error target " + error.target);
-            console.log("upload error code" + error.code);
-        },
+        success,
+        failure,
         false, {
             headers: {
                 "Authorization": ""
@@ -51,13 +43,28 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
         });
     $scope.fileTransfer.onprogress = function(progressEvent) {
         if (progressEvent.lengthComputable) {
-          window.progressBar.value = progressEvent.loaded / progressEvent.total *100;
+          progress(progressEvent.loaded / progressEvent.total);
         }
     };
+  }
+
+  $scope.downloadAction = function() {
+    window.progressBar.value = 0;
+    download("http://cdn.wall-pix.net/albums/art-space/00030109.jpg",
+              function(entry) {
+                console.log("download complete: " + entry.toURL());
+              },
+              function(error) {
+                console.log("download error source " + error.source);
+                console.log("download error target " + error.target);
+                console.log("upload error code" + error.code);
+              },
+              function(progress) {
+                window.progressBar.value = progress *100;
+              });
   };
 
   $scope.pauseAction = function() {
-    $scope.fileTransfer = 0;
   };
 
   $scope.resumeAction = function() {
@@ -69,6 +76,35 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
     window.progressBar.value = 0;
   };
 
+  $scope.ntfyAction = function() {
+        var fetcher = window.BackgroundFetch;
+
+        // Your background-fetch handler.
+        var fetchCallback = function() {
+            console.log('BackgroundFetch initiated');
+
+          	var url = "http://www.songspk320z.us/songoftheday/[Songs.PK]%20Khaike%20Paan%20Banaraswala%20-%20Don%20(2006).mp3";
+            download(url,
+                      function(entry) {
+                        console.log("Background download complete: " + entry.toURL());
+                        Fetcher.finish();
+                      },
+                      function(error) {
+                        console.log("Background download error source " + error.source);
+                        console.log("Background download error target " + error.target);
+                        console.log("Background upload error code" + error.code);
+                        Fetcher.finish();
+                      },
+                      function(progress) {
+
+                      });
+        }
+        var failureCallback = function() {
+            console.log('- BackgroundFetch failed');
+        };
+        fetcher.configure(fetchCallback, failureCallback, {stopOnTerminate: true});
+        console.log(fetcher);
+  };
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
