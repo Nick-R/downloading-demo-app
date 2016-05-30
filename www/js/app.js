@@ -26,6 +26,15 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
 .controller('DownloadCtrl', function($scope) {
 
   download = function(url, success, failure, progress) {
+    cordova.plugins.notification.local.schedule({
+        id: 1,
+        title: "Download started",
+        text: "File: "+url
+    });
+    cordova.plugins.notification.local.on("click", function (notification) {
+        alert(notification.title+"\n"+notification.text);
+    });
+
     var targetPath = cordova.file.documentsDirectory +url.substring(url.lastIndexOf('/') + 1);;
     var trustHosts = true;
     var options = {};
@@ -34,7 +43,14 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
     $scope.fileTransfer.download(
         url,
         targetPath,
-        success,
+        function(entry) {
+          cordova.plugins.notification.local.schedule({
+              id: 2,
+              title: "Download complete",
+              text: "File: "+url
+          });
+          success(entry);
+        },
         failure,
         false, {
             headers: {
