@@ -26,7 +26,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
 .controller('DownloadCtrl', function($scope) {
 
   download = function(url, success, failure, progress) {
-    var targetPath = cordova.file.documentsDirectory + url.substring(url.lastIndexOf('/') + 1);;
+    var targetPath = cordova.file.documentsDirectory +url.substring(url.lastIndexOf('/') + 1);;
     var trustHosts = true;
     var options = {};
 
@@ -83,17 +83,17 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
         var fetchCallback = function() {
             console.log('BackgroundFetch initiated');
 
-          	var url = "http://www.songspk320z.us/songoftheday/[Songs.PK]%20Khaike%20Paan%20Banaraswala%20-%20Don%20(2006).mp3";
+          	var url = "http://www.keithandthegirl.com/vip/download/shows/mnik/MNIK-2016-05-27.mp3?a=14-bfc1217d9d82361a802b";
             download(url,
                       function(entry) {
                         console.log("Background download complete: " + entry.toURL());
-                        Fetcher.finish();
+                        fetcher.finish();
                       },
                       function(error) {
                         console.log("Background download error source " + error.source);
                         console.log("Background download error target " + error.target);
                         console.log("Background upload error code" + error.code);
-                        Fetcher.finish();
+                        fetcher.finish();
                       },
                       function(progress) {
 
@@ -103,7 +103,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
             console.log('- BackgroundFetch failed');
         };
         fetcher.configure(fetchCallback, failureCallback, {stopOnTerminate: true});
-        console.log(fetcher);
   };
 })
 

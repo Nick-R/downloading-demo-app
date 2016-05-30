@@ -27,5 +27,7 @@
       "id": "cordova-plugin-background-fetch"
     }
   ],
-  "cordovaPlatforms": []
+  "cordovaPlatforms": [
+    "ios"
+  ]
 }
