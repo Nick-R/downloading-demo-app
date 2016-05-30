@@ -20,36 +20,55 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
     }
-
-
-    var url = "http://cdn.wall-pix.net/albums/art-space/00030109.jpg";
-      var targetPath = cordova.file.documentsDirectory + "testImage.png";
-      var trustHosts = true;
-      var options = {};
-
-      var fileTransfer = new FileTransfer();
-      fileTransfer.download(
-          url,
-          targetPath,
-          function(entry) {
-              console.log("download complete: " + entry.toURL());
-          },
-          function(error) {
-              console.log("download error source " + error.source);
-              console.log("download error target " + error.target);
-              console.log("upload error code" + error.code);
-          },
-          false, {
-              headers: {
-                  "Authorization": ""
-              }
-          });
-      fileTransfer.onprogress = function(progressEvent) {
-          if (progressEvent.lengthComputable) {
-            console.log("progress: " + progressEvent.loaded / progressEvent.total *100 + "%");
-          }
-      };
   });
+})
+
+.controller('DownloadCtrl', function($scope) {
+
+  $scope.downloadAction = function() {
+    var url = "http://cdn.wall-pix.net/albums/art-space/00030109.jpg";
+    var targetPath = cordova.file.documentsDirectory + "testImage.png";
+    var trustHosts = true;
+    var options = {};
+
+    $scope.fileTransfer = new FileTransfer();
+    window.progressBar.value = 0;
+    $scope.fileTransfer.download(
+        url,
+        targetPath,
+        function(entry) {
+            console.log("download complete: " + entry.toURL());
+        },
+        function(error) {
+            console.log("download error source " + error.source);
+            console.log("download error target " + error.target);
+            console.log("upload error code" + error.code);
+        },
+        false, {
+            headers: {
+                "Authorization": ""
+            }
+        });
+    $scope.fileTransfer.onprogress = function(progressEvent) {
+        if (progressEvent.lengthComputable) {
+          window.progressBar.value = progressEvent.loaded / progressEvent.total *100;
+        }
+    };
+  };
+
+  $scope.pauseAction = function() {
+    $scope.fileTransfer = 0;
+  };
+
+  $scope.resumeAction = function() {
+  };
+
+  $scope.abortAction = function() {
+    $scope.fileTransfer.onprogress = 0;
+    $scope.fileTransfer.abort();
+    window.progressBar.value = 0;
+  };
+
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
