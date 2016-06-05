@@ -46,13 +46,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
                     success(targetFile);
               },
               function(error) {
-                    targetFile.remove(function(){
-                      // The file has been removed succesfully
-                    },function(error){
-                        // Error deleting the file
-                    },function(){
-                       // The file doesn't exist
-                    });
                     failure(error);
               },
               function(value) {
@@ -69,9 +62,9 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
                 console.log("download complete: " + targetFile.toURL());
               },
               function(error) {
-                console.log("download error source " + error.source);
-                console.log("download error target " + error.target);
-                console.log("upload error code" + error.code);
+                  console.log("download error source " + error.source);
+                  console.log("download error target " + error.target);
+                  console.log("upload error code" + error.code);
               },
               function(progress) {
                 window.progressBar.value = progress *100;
@@ -79,19 +72,26 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
   };
 
   $scope.pauseAction = function() {
-    // var fileName = "PointerEventsCordovaPlugin.wmv",
-        // uriString = "http://media.ch9.ms/ch9/8c03/f4fe2512-59e5-4a07-bded-124b06ac8c03/PointerEventsCordovaPlugin.wmv";
-
-    // open target file for download
-
+        // for now just stop downloading
+        $scope.download.stop();
   };
 
   $scope.resumeAction = function() {
   };
 
   $scope.abortAction = function() {
-    $scope.download.stop();
-    window.progressBar.value = 0;
+        // stop downloading
+        $scope.download.stop();
+        // clear progress bar
+        window.progressBar.value = 0;
+        // remove local file
+        $scope.download.resultFile.remove(function(){
+          // The file has been removed succesfully
+        },function(error){
+            // Error deleting the file
+        },function(){
+           // The file doesn't exist
+        });
   };
 
   $scope.ntfyAction = function() {
