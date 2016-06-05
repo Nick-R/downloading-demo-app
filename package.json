@@ -31,7 +31,7 @@
       "id": "de.appplant.cordova.plugin.local-notification"
     },
     {
-      "locator": "https://github.com/sgrebnov/cordova-plugin-background-download",
+      "locator": "https://github.com/Nick-R/cordova-plugin-background-download.git",
       "id": "cordova-plugin-background-download"
     }
   ],

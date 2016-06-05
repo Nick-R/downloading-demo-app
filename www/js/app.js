@@ -72,11 +72,13 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
   };
 
   $scope.pauseAction = function() {
-        // for now just stop downloading
-        $scope.download.stop();
+        // pause downloading
+        $scope.download.pause();
   };
 
   $scope.resumeAction = function() {
+        // resume downloading
+        $scope.download.resume();
   };
 
   $scope.abortAction = function() {
