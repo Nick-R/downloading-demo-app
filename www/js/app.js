@@ -20,55 +20,53 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
     }
+
   });
 })
 
 .controller('DownloadCtrl', function($scope) {
 
+  var __i=0, __a = 0;
+
+  onTrigger = function(notification) {
+    console.dir(notification);
+  };
+
   download = function(url, success, failure, progress) {
-    cordova.plugins.notification.local.schedule({
-        id: 1,
-        title: "Download started",
-        text: "File: "+url
-    });
-    cordova.plugins.notification.local.on("click", function (notification) {
-        alert(notification.title+"\n"+notification.text);
-    });
+    var fileName = url.substring(url.lastIndexOf('/') + 1);
 
-    var targetPath = cordova.file.documentsDirectory +url.substring(url.lastIndexOf('/') + 1);;
-    var trustHosts = true;
-    var options = {};
-
-    $scope.fileTransfer = new FileTransfer();
-    $scope.fileTransfer.download(
-        url,
-        targetPath,
-        function(entry) {
-          cordova.plugins.notification.local.schedule({
-              id: 2,
-              title: "Download complete",
-              text: "File: "+url
-          });
-          success(entry);
-        },
-        failure,
-        false, {
-            headers: {
-                "Authorization": ""
-            }
+    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+        fileSystem.root.getFile(fileName, { create: true }, function (targetFile) {
+            var downloader = new BackgroundTransfer.BackgroundDownloader();
+            // Create a new download operation.
+            $scope.download = downloader.createDownload(url, targetFile);
+            // Start the download and persist the promise to be able to cancel the download.
+            var downloadPromise = $scope.download.startAsync().then(
+              function() {
+                    success(targetFile);
+              },
+              function(error) {
+                    targetFile.remove(function(){
+                      // The file has been removed succesfully
+                    },function(error){
+                        // Error deleting the file
+                    },function(){
+                       // The file doesn't exist
+                    });
+                    failure(error);
+              },
+              function(value) {
+                    progress(value.bytesReceived / value.totalBytesToReceive);
+              });
         });
-    $scope.fileTransfer.onprogress = function(progressEvent) {
-        if (progressEvent.lengthComputable) {
-          progress(progressEvent.loaded / progressEvent.total);
-        }
-    };
+    });
   }
 
   $scope.downloadAction = function() {
     window.progressBar.value = 0;
     download("http://cdn.wall-pix.net/albums/art-space/00030109.jpg",
-              function(entry) {
-                console.log("download complete: " + entry.toURL());
+              function(targetFile) {
+                console.log("download complete: " + targetFile.toURL());
               },
               function(error) {
                 console.log("download error source " + error.source);
@@ -81,34 +79,54 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
   };
 
   $scope.pauseAction = function() {
+    // var fileName = "PointerEventsCordovaPlugin.wmv",
+        // uriString = "http://media.ch9.ms/ch9/8c03/f4fe2512-59e5-4a07-bded-124b06ac8c03/PointerEventsCordovaPlugin.wmv";
+
+    // open target file for download
+
   };
 
   $scope.resumeAction = function() {
   };
 
   $scope.abortAction = function() {
-    $scope.fileTransfer.onprogress = 0;
-    $scope.fileTransfer.abort();
+    $scope.download.stop();
     window.progressBar.value = 0;
   };
 
   $scope.ntfyAction = function() {
         var fetcher = window.BackgroundFetch;
 
+        cordova.plugins.notification.local.on("trigger", onTrigger);
         // Your background-fetch handler.
         var fetchCallback = function() {
             console.log('BackgroundFetch initiated');
+            cordova.plugins.notification.local.schedule({
+                id: 1,
+                title: "BackgroundFetch initiated",
+                text: "File: "+url
+            });
 
           	var url = "http://www.keithandthegirl.com/vip/download/shows/mnik/MNIK-2016-05-27.mp3?a=14-bfc1217d9d82361a802b";
             download(url,
                       function(entry) {
                         console.log("Background download complete: " + entry.toURL());
+                        cordova.plugins.notification.local.schedule({
+                            id: 2,
+                            title: "Download complete",
+                            text: "File: "+url
+                        });
                         fetcher.finish();
                       },
                       function(error) {
                         console.log("Background download error source " + error.source);
                         console.log("Background download error target " + error.target);
                         console.log("Background upload error code" + error.code);
+                        cordova.plugins.notification.local.schedule({
+                            id: 2,
+                            title: "Download error",
+                            text: error.toString()
+                        });
                         fetcher.finish();
                       },
                       function(progress) {
