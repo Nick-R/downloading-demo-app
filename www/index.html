@@ -24,11 +24,6 @@
     <script src="js/services.js"></script>
   </head>
   <body ng-app="starter" ng-controller="DownloadCtrl">
-
-
-    <!--
-      The nav bar that will be updated as we navigate between views.
--->
     <div class="bar bar-header bar-stable">
       <h1 class="title">downloading demo</h1>
     </div>
@@ -36,20 +31,29 @@
       <button class="button button-full button-positive" ng-click="downloadAction()">
         Download
       </button>
-      <br><progress id="progressBar" max="100" value="0"></progress><br>
+      <progress id="progressBar" max="100" value="0"></progress><br>
 
-      <button class="button button-full button-calm" ng-click="pauseAction()">
-        Pause Download
+      <button style="margin: 0 auto; width:32%" class="button button-outline button-calm" ng-click="pauseAction()">
+        Pause
       </button>
-      <button class="button button-full button-calm" ng-click="resumeAction()">
-        Resume Download
+      <button style="margin: 0 auto; width:32%" class="button button-outline button-calm" ng-click="resumeAction()">
+        Resume
       </button>
-      <button class="button button-full button-assertive" ng-click="abortAction()">
+      <button style="margin: 0 auto; width:32%" class="button button-outline button-assertive" ng-click="abortAction()">
         Abort
       </button>
-
       <button class="button button-full button-positive" ng-click="ntfyAction()">
-        Schedule download
-      </button>
+        Schedule
+      </button><br>
+
+      <div class="list">
+        <div ng-repeat="file in files">
+            <a class="item item-icon-left" href="#" ng-click="getContents(file.nativeURL)">
+                <i ng-show="file.isDirectory" class="icon ion-folder"></i>
+                <i ng-show="file.isFile" class="icon ion-document"></i>
+                {{file.name}}
+            </a>
+        </div>
+    </div>
   </body>
 </html>
